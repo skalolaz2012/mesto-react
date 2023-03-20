@@ -3,11 +3,14 @@ import Header from './Header/Header'
 import Main from './Main/Main'
 import Footer from './Footer/Footer'
 import PopupWithForm from './PopupWithForm/PopupWithForm'
+import ImagePopup from './ImagePopup/ImagePopup'
+
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false)
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false)
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false)
-  
+  const [selectedCard, setSelectedCard] = useState(null)
+
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true)
   }
@@ -20,10 +23,15 @@ function App() {
     setIsEditAvatarPopupOpen(true)
   }
 
+  function handleCardClick(data) {
+    setSelectedCard(data)
+  }
+
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false)
     setIsAddPlacePopupOpen(false)
     setIsEditAvatarPopupOpen(false)
+    setSelectedCard(null)
   }
 
   return (
@@ -35,6 +43,7 @@ function App() {
             onEditProfile={handleEditProfileClick}
             onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick}
+            onCardClick={handleCardClick}
           />
           <Footer />
         </div>
@@ -96,8 +105,8 @@ function App() {
               name="name"
               placeholder="Название"
               required
-              minlength="2"
-              maxlength="30"
+              minLength="2"
+              maxLength="30"
               className="popup__input popup__input_field_description"
               id="card-input"
             />
@@ -150,30 +159,7 @@ function App() {
           onClose={closeAllPopups}
         ></form>
       </PopupWithForm>
-
-      <template id="element-template">
-        <li className="elements__item">
-          <button
-            type="button"
-            aria-label="Кнопка удаления карточки"
-            className="elements__delete-button"
-          ></button>
-          <button className="elements__image-button">
-            <img className="elements__image" />
-          </button>
-          <div className="elements__description">
-            <h2 className="elements__title"></h2>
-            <div className="elements__button-container">
-              <button
-                type="button"
-                aria-label="Кнопка лайк карточки"
-                className="elements__button"
-              ></button>
-              <p className="elements__count"></p>
-            </div>
-          </div>
-        </li>
-      </template>
+      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
     </div>
   )
 }
