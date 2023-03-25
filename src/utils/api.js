@@ -58,18 +58,19 @@ class Api {
   }
 
   // 8. Постановка и снятие лайка
-  putLike(id) {
-    return fetch(`${this._url}/cards/${id}/likes`, {
-      method: 'PUT',
-      headers: this._headers,
-    }).then(this._checkRes)
-  }
 
-  deleteLike(id) {
-    return fetch(`${this._url}/cards/${id}/likes`, {
-      method: 'DELETE',
-      headers: this._headers,
-    }).then(this._checkRes)
+  changeLikeCardStatus(id, isLiked) {
+    if (isLiked) {
+      return fetch(`${this._url}/cards/${id}/likes`, {
+        method: 'PUT',
+        headers: this._headers,
+      }).then(this._checkRes)
+    } else {
+      return fetch(`${this._url}/cards/${id}/likes`, {
+        method: 'DELETE',
+        headers: this._headers,
+      }).then(this._checkRes)
+    }
   }
 
   // 9. Обновление аватара пользователя
