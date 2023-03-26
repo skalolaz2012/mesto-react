@@ -3,18 +3,20 @@ import { api } from '../utils/api'
 import Header from './Header/Header'
 import Main from './Main/Main'
 import Footer from './Footer/Footer'
-import PopupWithForm from './PopupWithForm/PopupWithForm'
 import ImagePopup from './ImagePopup/ImagePopup'
 import EditProfilePopup from './EditProfilePopup/EditProfilePopup'
 import EditAvatarPopup from './EditAvatarPopup/EditAvatarPopup'
 import AddPlacePopup from './AddPlacePopup/AddPlacePopup'
+import SubmitPopup from './SubmitPopup/SubmitPopup'
 import { CurrentUserContext } from '../contexts/CurrentUserContext'
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false)
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false)
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false)
+  const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] = useState(false)
   const [selectedCard, setSelectedCard] = useState(null)
+  const [cardDel, setCardDel] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const [cards, setCards] = useState([])
   const [error, setError] = useState('')
@@ -49,6 +51,11 @@ function App() {
     setIsEditAvatarPopupOpen(true)
   }
 
+  function handleDeleteCardClick(card) {
+    setIsDeleteCardPopupOpen(true)
+    setCardDel(card)
+  }
+
   function handleCardClick(data) {
     setSelectedCard(data)
   }
@@ -64,10 +71,20 @@ function App() {
   }
 
   function handleCardDelete(card) {
+    setIsBtnLoading(true)
     // Отправляем запрос в API и удаляем карточку
-    api.deleteCard(card._id).then(() => {
-      setCards((state) => state.filter((c) => c._id !== card._id && c))
-    })
+    api
+      .deleteCard(card._id)
+      .then(() => {
+        setCards((state) => state.filter((c) => c._id !== card._id && c))
+        closeAllPopups()
+      })
+      .catch((error) => {
+        setError(error.message)
+      })
+      .finally(() => {
+        setIsBtnLoading(false)
+      })
   }
 
   function handleUpdateUser(data) {
@@ -122,6 +139,7 @@ function App() {
     setIsEditProfilePopupOpen(false)
     setIsAddPlacePopupOpen(false)
     setIsEditAvatarPopupOpen(false)
+    setIsDeleteCardPopupOpen(false)
     setSelectedCard(null)
   }
 
@@ -148,7 +166,7 @@ function App() {
                 onEditAvatar={handleEditAvatarClick}
                 onCardClick={handleCardClick}
                 onCardLike={handleCardLike}
-                onCardDelete={handleCardDelete}
+                onCardDelete={handleDeleteCardClick}
                 cards={cards}
               />
             )}
@@ -173,15 +191,14 @@ function App() {
           onAddPlace={handleAddPlaceSubmit}
           isBtnLoading={isBtnLoading}
         />
-
-        <PopupWithForm
-          id="popup-delete-form"
-          title="Вы уверены?"
-          button="Да"
-          isOpen={false}
+        <SubmitPopup
+          isOpen={isDeleteCardPopupOpen}
           onClose={closeAllPopups}
-          type="form_delete"
-        ></PopupWithForm>
+          onDeleteCard={handleCardDelete}
+          isBtnLoading={isBtnLoading}
+          card={cardDel}
+        />
+
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
       </div>
     </CurrentUserContext.Provider>

@@ -2,19 +2,18 @@ import { useRef, useEffect } from 'react'
 import PopupWithForm from '../PopupWithForm/PopupWithForm'
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace, isBtnLoading }) {
-  
   const titleRef = useRef(null)
   const linkRef = useRef(null)
 
   function handleAddPlace(e) {
-    e.preventDefault();
-  
+    e.preventDefault()
+
     onAddPlace({
       name: titleRef.current.value,
       link: linkRef.current.value,
-    });
+    })
   }
-  
+
   useEffect(() => {
     titleRef.current.value = ''
     linkRef.current.value = ''
