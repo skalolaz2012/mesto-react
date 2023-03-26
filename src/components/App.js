@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../utils/api'
+
 import Header from './Header/Header'
 import Main from './Main/Main'
 import Footer from './Footer/Footer'
@@ -8,6 +9,7 @@ import EditProfilePopup from './EditProfilePopup/EditProfilePopup'
 import EditAvatarPopup from './EditAvatarPopup/EditAvatarPopup'
 import AddPlacePopup from './AddPlacePopup/AddPlacePopup'
 import SubmitPopup from './SubmitPopup/SubmitPopup'
+
 import { CurrentUserContext } from '../contexts/CurrentUserContext'
 
 function App() {
@@ -198,7 +200,6 @@ function App() {
           isBtnLoading={isBtnLoading}
           card={cardDel}
         />
-
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
       </div>
     </CurrentUserContext.Provider>
