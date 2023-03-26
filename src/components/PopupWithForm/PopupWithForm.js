@@ -20,14 +20,20 @@ function PopupWithForm(props) {
             name={props.type}
             className="popup__form"
             noValidate
+            onSubmit={props.onSubmit}
           >
             <fieldset className="popup__field-info">
               <div>{props.children}</div>
             </fieldset>
+            <button
+              type="submit"
+              className="popup__submit-button"
+            >
+              {props.isBtnLoading
+                ? props.submitBtn
+                : props.button || 'Сохранить'}
+            </button>
           </form>
-          <button type="submit" className="popup__submit-button" onClick={props.onSubmit}>
-            {props.isBtnLoading ? props.submitBtn : (props.button || 'Сохранить')}
-          </button>
         </div>
       </div>
     </div>

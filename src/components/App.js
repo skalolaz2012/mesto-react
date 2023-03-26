@@ -38,6 +38,7 @@ function App() {
       })
       .finally(() => {
         setIsLoading(false)
+        setIsBtnLoading(false)
       })
   }, [])
 
