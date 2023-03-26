@@ -5,6 +5,9 @@ import Main from './Main/Main'
 import Footer from './Footer/Footer'
 import PopupWithForm from './PopupWithForm/PopupWithForm'
 import ImagePopup from './ImagePopup/ImagePopup'
+import EditProfilePopup from './EditProfilePopup/EditProfilePopup'
+import EditAvatarPopup from './EditAvatarPopup/EditAvatarPopup'
+import AddPlacePopup from './AddPlacePopup/AddPlacePopup'
 import { CurrentUserContext } from '../contexts/CurrentUserContext'
 
 function App() {
@@ -16,6 +19,7 @@ function App() {
   const [cards, setCards] = useState([])
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [isBtnLoading, setIsBtnLoading] = useState(true)
 
   useEffect(() => {
     api
@@ -62,8 +66,56 @@ function App() {
   function handleCardDelete(card) {
     // Отправляем запрос в API и удаляем карточку
     api.deleteCard(card._id).then(() => {
-      setCards((state) => state.filter((c) => (c._id !== card._id && c)))
+      setCards((state) => state.filter((c) => c._id !== card._id && c))
     })
+  }
+
+  function handleUpdateUser(data) {
+    setIsBtnLoading(true)
+    api
+      .changeUserObj(data)
+      .then((user) => {
+        setCurrentUser(user)
+        closeAllPopups()
+      })
+      .catch((error) => {
+        setError(error.message)
+      })
+      .finally(() => {
+        setIsBtnLoading(false)
+      })
+  }
+
+  function handleUpdateAvatar(data) {
+    setIsBtnLoading(true)
+    api
+      .changeAvatar(data)
+      .then((avatar) => {
+        setCurrentUser(avatar)
+        closeAllPopups()
+      })
+      .catch((error) => {
+        setError(error.message)
+      })
+      .finally(() => {
+        setIsBtnLoading(false)
+      })
+  }
+
+  function handleAddPlaceSubmit(data) {
+    setIsBtnLoading(true)
+    api
+      .createCard(data)
+      .then((card) => {
+        setCards([card, ...cards])
+        closeAllPopups()
+      })
+      .catch((error) => {
+        setError(error.message)
+      })
+      .finally(() => {
+        setIsBtnLoading(false)
+      })
   }
 
   function closeAllPopups() {
@@ -76,7 +128,7 @@ function App() {
   if (error) {
     return (
       <main className="content">
-        <h1 style={{ color: 'white' }} >Error: {error}</h1>
+        <h1 style={{ color: 'white' }}>Error: {error}</h1>
       </main>
     )
   }
@@ -103,92 +155,25 @@ function App() {
             <Footer />
           </div>
         </div>
-        <PopupWithForm
-          id="popup-edit-form"
-          title="Редактировать профиль"
+        <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
-          type="form_name"
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Имя"
-            required
-            minLength="2"
-            maxLength="40"
-            className="popup__input popup__input_field_title"
-            id="name-input"
-          />
-          <div className="popup__field">
-            <span className="name-input-error popup__error popup__error-field"></span>
-          </div>
-          <input
-            type="text"
-            name="about"
-            placeholder="О себе"
-            required
-            minLength="2"
-            maxLength="200"
-            className="popup__input popup__input_field_text"
-            id="about-input"
-          />
-          <div className="popup__field">
-            <span className="about-input-error popup__error popup__error-field"></span>
-          </div>
-        </PopupWithForm>
-        <PopupWithForm
-          id="popup-add-form"
-          title="Новое место"
-          button="Создать"
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          type="form_card"
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Название"
-            required
-            minLength="2"
-            maxLength="30"
-            className="popup__input popup__input_field_description"
-            id="card-input"
-          />
-          <div className="popup__field">
-            <span className="card-input-error popup__error popup__error-field"></span>
-          </div>
-          <input
-            type="url"
-            name="link"
-            placeholder="Ссылка на картинку"
-            required
-            className="popup__input popup__input_field_image"
-            id="url-input"
-          />
-          <div className="popup__field">
-            <span className="url-input-error popup__error popup__error-field"></span>
-          </div>
-        </PopupWithForm>
-        <PopupWithForm
-          id="popup-avatar-form"
-          title="Обновить аватар"
+          onUpdateUser={handleUpdateUser}
+          isBtnLoading={isBtnLoading}
+        />
+        <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
-          type="form_avatar"
-        >
-          <input
-            type="url"
-            name="avatar"
-            placeholder="Ссылка на аватар"
-            required
-            className="popup__input popup__input_field_description"
-            id="avatar-input"
-          />
-          <div className="popup__field">
-            <span className="avatar-input-error popup__error popup__error-field"></span>
-          </div>
-        </PopupWithForm>
+          onUpdateAvatar={handleUpdateAvatar}
+          isBtnLoading={isBtnLoading}
+        />
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit}
+          isBtnLoading={isBtnLoading}
+        />
+
         <PopupWithForm
           id="popup-delete-form"
           title="Вы уверены?"
